@@ -72,6 +72,11 @@ public class Sudoku{
 		}
 	}
 	
+	public int sovle(){
+		int ans = 0;
+		return ans;
+	}
+	
 	public void printBoard(){
 		for(int i=0;i<maxSize;i++){
 			for(int j=0;j<maxSize;j++){
