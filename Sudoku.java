@@ -13,15 +13,15 @@ public class Sudoku{
 									//del 3 1 3
 									//del 7 2 5
 									//del 8 4 8
-	static int [][] testBoard2 =    {{1,8,0,4,0,0,0,9,0},
-									{0,0,9,0,7,1,0,0,8},
-									{0,4,0,5,0,0,1,0,6},
-									{0,0,3,0,5,0,0,7,0},
-									{9,0,6,0,8,0,5,0,2},
-									{0,1,0,0,4,9,3,0,0},
-									{8,0,4,0,0,5,0,3,0},
-									{7,0,0,8,3,0,6,0,0},
-									{0,3,0,0,0,4,0,8,5},};
+	static int [][] testBoard2 =   {{3,0,0,9,0,7,0,6,0},
+									{6,0,0,0,1,0,9,2,0},
+									{0,9,1,0,0,5,0,4,0},
+									{0,0,7,0,9,1,0,0,4},
+									{4,3,0,0,0,2,0,1,6},
+									{1,0,0,0,0,8,2,0,0},
+									{0,1,0,8,0,0,7,9,0},
+									{0,6,3,0,5,0,0,0,2},
+									{0,4,0,7,0,3,0,0,1},};
 									//del 3 1 3
 									//del 7 2 5
 									//del 8 4 8
@@ -56,7 +56,6 @@ public class Sudoku{
 				while(!done){
 					do{
 						value = ran.nextInt(9)+1;
-						//System.out.println("value: " + value);
 					}while(set.contains(value));
 					if(check(board,i,j,value)){
 						board[i][j] = value;
@@ -71,18 +70,12 @@ public class Sudoku{
 						set.add(value);
 					}
 					if(tryTimes>=tryLimit){
-						//System.out.println("break");
 						tryTimes=0;
 						for(int k=0;k<maxSize;k++){
 							board[i][k] = 0;
 						}
 						j=-1;
-						/*
-						if(i<0){
-								i=0;
-								System.out.println("i = -");
-						}
-						*/
+						
 						set.clear();
 						done = true;
 					}
@@ -106,35 +99,24 @@ public class Sudoku{
 	public void solve(int[][] b){
 		boolean fillAns = false;
 		boolean otherAns = false;
+		int[][] copy = new int[maxSize][maxSize];
 		for(int i=0;i<maxSize;i++){
 			for(int j=0;j<maxSize;j++){
 				if(b[i][j] == 0){
 					boolean findAns = false;
 					for(int k=1;k<maxSize+1;k++){
 						if(check(b,i,j,k)){
-							//if(choice[i][j][k-1]==0){
-								System.out.println("find  i " + i + " j "+ j + " ans is " + k);
-								int[][] copy = copyBoard(b);
+								//System.out.println("find  i " + i + " j "+ j + " ans is " + k);
+								copy = copyBoard(b);
 								copy[i][j] = k;
-								//if(i==6 && j==5)printBoard(copy);
-								//choice[i][j][k-1]=1;
-								//System.out.println("solveNum check1 " + solveNum);
-								//solveNum+=solve(copy);
 								solve(copy);
-								//System.out.println("solveNum check2 " + solveNum);
 								fillAns = true;
 								findAns = true;
-							//}
-							//else{
-							//	otherAns = true;
-							//}
 							findAns = true;
-							
 						}
 						
 						else if(k==maxSize && !findAns){
-							System.out.println("i " + i + " j " + j +" find no ans return");
-							//return ;
+							//System.out.println("i " + i + " j " + j +" find no ans return");
 						}
 						
 					}
@@ -142,14 +124,9 @@ public class Sudoku{
 				}
 			}
 		}
-		//if(fillAns){
-			//if(!otherAns)
-			solveNum++;
-			System.out.println("return solveNum " + solveNum);
-			//printBoard(testBoard);
-			//return solveNum;
-		//}
-		//else return 0;
+		printBoard(b);
+		solveNum++;
+		//System.out.println("return solveNum " + solveNum);
 	}
 	
 	public int[][] copyBoard(int[][] b){
@@ -174,6 +151,7 @@ public class Sudoku{
 				System.out.println("-----------------------");
 			
 		}
+		System.out.println();
 	}
 	
 	public boolean check(int[][] b,int r,int c,int value){
