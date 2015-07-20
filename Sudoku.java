@@ -27,6 +27,7 @@ public class Sudoku{
 									//del 8 4 8
 	private int maxSize = 9;
 	private int[][] board = new int[maxSize][maxSize];
+	public int[][] playerBoard = new int[maxSize][maxSize];
 	public int solveNum = 0;
 	private int[][][] choice = new int[maxSize][maxSize][maxSize];
 	public Sudoku(){
@@ -35,11 +36,39 @@ public class Sudoku{
 				board[i][j] = 0;
 			}
 		}
-		for(int i=0;i<maxSize;i++){
-			for(int j=0;j<maxSize;j++){
-				for(int k=0;k<maxSize;k++)choice[i][j][k]=0;
+	}
+	
+	public void init(){
+		genAns();
+		digBoard(playerBoard);
+		boolean win = false;
+		int value,i,j;
+		Scanner scan = new Scanner(System.in);
+		String line;
+		while(!win){
+			printBoard(playerBoard);
+			System.out.println("input answer(value row col): ");
+			value = scan.nextInt();
+			i = scan.nextInt();
+			j = scan.nextInt();
+			if(i<1 || i>9 || j<1 || j>9){
+				System.out.println("invalid location");
+				continue;
+			}
+			if(value<1 || value>9){
+				System.out.println("invalid value");
+				continue;
+			}
+			if(!check(playerBoard,i-1,j-1,value)){
+				System.out.println("wrong answer");
+				continue;
+			}
+			else{
+				playerBoard[i-1][j-1]=value;
+				win = winCheck(playerBoard,board);
 			}
 		}
+		System.out.println("you win");
 	}
 	
 	public void genAns(){
@@ -93,7 +122,7 @@ public class Sudoku{
 				}
 			}
 		}
-		printBoard(board);
+		playerBoard = copyBoard(board);
 	}
 	
 	public void solve(int[][] b){
@@ -106,7 +135,6 @@ public class Sudoku{
 					boolean findAns = false;
 					for(int k=1;k<maxSize+1;k++){
 						if(check(b,i,j,k)){
-								//System.out.println("find  i " + i + " j "+ j + " ans is " + k);
 								copy = copyBoard(b);
 								copy[i][j] = k;
 								solve(copy);
@@ -116,7 +144,6 @@ public class Sudoku{
 						}
 						
 						else if(k==maxSize && !findAns){
-							//System.out.println("i " + i + " j " + j +" find no ans return");
 						}
 						
 					}
@@ -124,9 +151,34 @@ public class Sudoku{
 				}
 			}
 		}
-		printBoard(b);
+		//printBoard(b);
 		solveNum++;
-		//System.out.println("return solveNum " + solveNum);
+	}
+	
+	public void digBoard(int[][] b){
+		Random ran = new Random();
+		int i,j,ri,rj;
+		for(int k=0;k<maxSize*maxSize/4;k++){
+			do{
+				i=ran.nextInt(9);
+				j=ran.nextInt(9);
+				ri = maxSize-1-i;
+				rj = maxSize-1-j;
+			}while(b[i][j]==0);
+		
+			int temp1 = b[i][j];
+			int temp2 = b[ri][rj];
+			b[i][j] = 0;
+			b[ri][rj] = 0;
+			solveNum=0;
+			solve(b);
+			if(solveNum>1){
+				b[i][j] = temp1;
+				b[ri][rj] = temp2;
+				k--;
+			}
+		}
+		printBoard(b);
 	}
 	
 	public int[][] copyBoard(int[][] b){
@@ -140,15 +192,20 @@ public class Sudoku{
 	}
 	
 	public void printBoard(int[][] b){
+		System.out.println();
+		System.out.println(" -----------------------");
+		
 		for(int i=0;i<maxSize;i++){
 			for(int j=0;j<maxSize;j++){
+				if(j==0)
+					System.out.print("| ");
 				System.out.print(b[i][j] + " ");
 				if((j+1)%3==0)
 					System.out.print("| ");
 			}
 			System.out.print("\n");
 			if((i+1)%3==0)
-				System.out.println("-----------------------");
+				System.out.println(" -----------------------");
 			
 		}
 		System.out.println();
@@ -159,18 +216,25 @@ public class Sudoku{
 		int bRow,bCol;
 		for(int i=0;i<maxSize;i++){
 			if(b[r][i]==value && i!=c){
-				//if(r==6 && c==6)System.out.println("row wrong");
 				return false;
 			}
 			if(b[i][c]==value && i!=r){
-				//if(r==6 && c==6)System.out.println("col wrong");
 				return false;
 			}
 			bRow = (i/3)+(blockNum/3)*3;
 			bCol = (i%3)+(blockNum%3)*3;
 			if(b[bRow][bCol]==value && !(bRow==r && bCol==c)){
-				//if(bRow==6 && bCol==6)System.out.println("block wrong");
 				return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean winCheck(int[][] b,int[][] ansB){
+		for(int i=0;i<maxSize;i++){
+			for(int j=0;j<maxSize;j++){
+				if(b[i][j]!=ansB[i][j])
+					return false;
 			}
 		}
 		return true;
@@ -179,10 +243,11 @@ public class Sudoku{
 	public static void main(String args[]){
 		Sudoku sudoku = new Sudoku();
 		//sudoku.printBoard();
-		//sudoku.genAns();
+		sudoku.init();
+		//sudoku.printBoard(testBoard2);
 		//sudoku.printBoard();
-		sudoku.printBoard(testBoard2);
-		sudoku.solve(testBoard2);
-		System.out.println(sudoku.solveNum);
+		//sudoku.printBoard(testBoard2);
+		//sudoku.solve(testBoard2);
+		//System.out.println(sudoku.solveNum);
 	}
 }
